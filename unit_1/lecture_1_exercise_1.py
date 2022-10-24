@@ -48,10 +48,13 @@ class ItemsChooser:
         self.items = sorted(
             self.items, key = lambda x: self.metric(x), reverse=True)
 
-    def select_items(self):
-        'Returns'
+    def select_items(self) -> list:
+        """
+        Greedily select the most valuable items according to a defined metric
+        while satisfying the weight constraint.
+        """
+
         self._sort_items()
-        print('Sorted items: ', self.items)
 
         for item in self.items:
 
