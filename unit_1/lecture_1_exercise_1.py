@@ -56,8 +56,7 @@ class ItemsChooser:
         for item in self.items:
 
             if item.weight + self.carry <= self.limit:
-                self.keeping.append(
-                    (item, self.metric(item)))
+                self.keeping.append((item, self.metric(item)))
                 self.carry += item.weight
         return self.keeping
 
