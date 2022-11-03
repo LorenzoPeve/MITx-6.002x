@@ -1,27 +1,5 @@
 # Exercise 1
 
-
-# Generate all combinations of N items
-def powerSet(items):
-    N = len(items)
-    # enumerate the 2**N possible combinations
-    for i in range(2**N):
-        combo = []
-        for j in range(N):
-            # test bit jth of integer i
-            if (i >> j) % 2 == 1:
-                combo.append(items[j])
-        yield combo
-
-def yieldAllCombos(items):
-    """
-      Generates all combinations of N items into two bags, whereby each 
-      item is in one or zero bags.
-
-      Yields a tuple, (bag1, bag2), where each bag is represented as 
-      a list of which item(s) are in each bag.
-    """
-
 class Item(object):
     def __init__(self, n, v, w):
         self.name = n
@@ -45,6 +23,43 @@ class Item(object):
         return (f'(name = {self.name}, value = {self.value},'
             f'weight = {self.weight})')
 
+# Generate all combinations of N items
+def powerSet(items):
+    N = len(items)
+    # enumerate the 2**N possible combinations
+    for i in range(2**N):
+        combo = []
+        for j in range(N):
+            # test bit jth of integer i
+            if (i >> j) % 2 == 1:
+                combo.append(items[j])
+        yield combo
+
+def yieldAllCombos(items):
+    """
+      Generates all combinations of N items into two bags, whereby each 
+      item is in one or zero bags.
+
+      Yields a tuple, (bag1, bag2), where each bag is represented as 
+      a list of which item(s) are in each bag.
+    """
+    combi_bag_1 = powerSet(items)
+    
+    while True:
+
+        try:
+            c1 = next(combi_bag_1)
+            combi_bag_2 = powerSet(list(set(items).difference(set(c1))))
+            while True:
+                try:
+                    c2 = next(combi_bag_2)
+                    yield (c1, c2)
+                except StopIteration:
+                    break
+        except StopIteration:
+                break
+
+
 def buildItems():
     return [Item(n,v,w) for n,v,w in (('clock', 175, 10),
                                       ('painting', 90, 9),
@@ -53,31 +68,48 @@ def buildItems():
                                       ('book', 10, 1),
                                       ('computer', 200, 20))]
 
+# Testing powerSet Generator
+gen = powerSet([1,2,3])
+combinations = []
+while True:
+    try:
+        combinations.append(next(gen))
+    except StopIteration:
+        break
 
-# items = buildItems()
-combos = powerSet([1,2,3])
+assert combinations == [[], [1], [2], [1, 2], [3], [1, 3], [2, 3], [1, 2, 3]]
 
-count = 0
-for _ in range(20):
-    count+=1
-    print(next(combos))
-    print(count)
 
-# print(next(combos))
-# print(next(combos))
-# print(next(combos))
-# print(next(combos))
-# # count = 0
-# print(next(combos))
-# a = next(combos)
-# print(type(a))
-# print(a)
-# while next(combos):
-#     count += 1
+# Testing powerSet Generator
+gen = yieldAllCombos([1,2,3])
+combinations = []
+while True:
+    try:
+        combinations.append(next(gen))
+    except StopIteration:
+        break
 
-# print(count)
+print(combinations)
+print(len(combinations))
 
-def simple_gen():
 
-    yield 
 
+def yieldAllCombos_bitwise(items):
+    """
+    Generates all combinations of N items into two bags, whereby each item is
+    in one or zero bags.
+
+    Yields a tuple, (bag1, bag2), where each bag is represented as a list of
+    which item(s) are in each bag.
+    """
+    N = len(items)
+    # Enumerate the 3**N possible combinations   
+    for i in range(3**N):
+        bag1 = []
+        bag2 = []
+        for j in range(N):
+            if (i // (3 ** j)) % 3 == 1:
+                bag1.append(items[j])
+            elif (i // (3 ** j)) % 3 == 2:
+                bag2.append(items[j])
+        yield (bag1, bag2)
