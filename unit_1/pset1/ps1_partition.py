@@ -20,6 +20,5 @@ def get_partitions(set_):
 
 
 if __name__ == '__main__':
-
-    for item in (get_partitions(['a','b','c','d'])):
+    for item in get_partitions(['a','b','c','d']):
         print(item)

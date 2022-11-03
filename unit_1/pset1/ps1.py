@@ -88,7 +88,7 @@ def greedy_cow_transport(cows: dict[str, int], limit=10) -> list[list]:
 
 
 # Problem 2
-def brute_force_cow_transport(cows,limit=10):
+def brute_force_cow_transport(cows: dict[str, int], limit=10) -> list[list]:
     """
     Finds the allocation of cows that minimizes the number of spaceship trips
     via brute force. The brute force algorithm should follow the following
@@ -110,12 +110,33 @@ def brute_force_cow_transport(cows,limit=10):
     transported on a particular trip and the overall list containing all the
     trips
     """
-    # TODO: Your code here
-    pass
+    def get_weight(names):
+        cum_weight = 0
+        for name in names:
+            cum_weight += cows[name]
+        return cum_weight
+
+    cows_names = cows.keys()
+    valid_trips = []
+    for trips_arrangement in get_partitions(cows_names):
+        
+        valid = True
+        # Check that each individual trip meets weight requirement
+        for trip in trips_arrangement:
+            if get_weight(trip) > limit:
+                valid = False
+                break
+        
+        # If all trips in a mission are valid, add to valid trip
+        if valid:
+            valid_trips.append(trips_arrangement)
+
+    return sorted(valid_trips, key = len)[0]
+
 
         
 # Problem 3
-def compare_cow_transport_algorithms():
+def compare_cow_transport_algorithms(cows, limit):
     """
     Using the data from ps1_cow_data.txt and the specified weight limit, run 
     your greedy_cow_transport and brute_force_cow_transport functions here. 
@@ -128,17 +149,29 @@ def compare_cow_transport_algorithms():
     Returns:
     Does not return anything.
     """
-    # TODO: Your code here
-    pass
+    
+    def _timeit(func):
 
+        start = time.time()
+        a = func(cows, limit)
+        end = time.time()
+        print(f'{func.__name__} took: {(end - start)*1000}')
+        print(a)
+
+    _timeit(greedy_cow_transport)
+    _timeit(brute_force_cow_transport)
+
+    
+
+
+# cows = {"Jesse": 6, "Maybel": 3, "Callie": 2, "Maggie": 5}
+# expected =[['Jesse', 'Maybel'], ['Maggie', 'Callie']]
+# assert expected == greedy_cow_transport(cows, 10)
+
+# assert len(brute_force_cow_transport(cows, 10)) == 2
 
 
 cows = load_cows("ps1_cow_data.txt")
+compare_cow_transport_algorithms(cows, 10)
 
 
-
-# # print(brute_force_cow_transport(cows, limit))
-
-cows = {"Jesse": 6, "Maybel": 3, "Callie": 2, "Maggie": 5}
-expected =[['Jesse', 'Maybel'], ['Maggie', 'Callie']]
-assert expected == greedy_cow_transport(cows, 10)
