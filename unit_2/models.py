@@ -6,8 +6,8 @@ class Location(object):
         self.x = x
         self.y = y
 
-    def move(self, deltaX, deltaY):
-        """deltaX and deltaY are numbers"""
+    def move(self, deltaX: float, deltaY: float):
+        """Moves an entity according to a delta in x and y."""
         return Location(self.x + deltaX, self.y + deltaY)
 
     def getX(self):
@@ -49,7 +49,7 @@ class Field(object):
             raise ValueError('Drunk not in field')
         return self.drunks[drunk]
 
-class Drunk(object):
+class Drunk():
     def __init__(self, name = None):
         """Assumes name is a str"""
         self.name = name
@@ -64,3 +64,25 @@ class UsualDrunk(Drunk):
         stepChoices = [(0,1), (0,-1), (1, 0), (-1, 0)]
         return random.choice(stepChoices)
 
+class ColdDrunk(Drunk):
+    def takeStep(self):
+        stepChoices = [(0.0,0.9),(0.0,-1.1),(1.0,0.0),(-1.0,0.0)]
+        return random.choice(stepChoices)
+      
+#random.seed(0)
+#drunkTest((10, 1000, 1000, 10000), 100, UsualDrunk)
+
+
+class ColdDrunk(Drunk):
+    def takeStep(self):
+        stepChoices = [(0.0,0.9), (0.0,-1.1),
+                       (1.0, 0.0), (-1.0, 0.0)]
+        return random.choice(stepChoices)
+
+def simAll(drunkKinds, walkLengths, numTrials):
+    for dClass in drunkKinds:
+        drunkTest(walkLengths, numTrials, dClass)
+        
+random.seed(0)
+simAll((UsualDrunk, ColdDrunk),
+       (1, 10, 100, 1000, 10000), 100)
