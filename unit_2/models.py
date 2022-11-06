@@ -68,21 +68,3 @@ class ColdDrunk(Drunk):
     def takeStep(self):
         stepChoices = [(0.0,0.9),(0.0,-1.1),(1.0,0.0),(-1.0,0.0)]
         return random.choice(stepChoices)
-      
-#random.seed(0)
-#drunkTest((10, 1000, 1000, 10000), 100, UsualDrunk)
-
-
-class ColdDrunk(Drunk):
-    def takeStep(self):
-        stepChoices = [(0.0,0.9), (0.0,-1.1),
-                       (1.0, 0.0), (-1.0, 0.0)]
-        return random.choice(stepChoices)
-
-def simAll(drunkKinds, walkLengths, numTrials):
-    for dClass in drunkKinds:
-        drunkTest(walkLengths, numTrials, dClass)
-        
-random.seed(0)
-simAll((UsualDrunk, ColdDrunk),
-       (1, 10, 100, 1000, 10000), 100)
