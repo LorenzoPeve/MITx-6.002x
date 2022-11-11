@@ -137,10 +137,6 @@ class RectangularRoom(object):
             return True
         return False
 
-
-
-
-# === Problem 2
 class Robot(object):
     """
     Represents a robot cleaning a particular room.
@@ -153,22 +149,21 @@ class Robot(object):
     """
     def __init__(self, room, speed):
         """
-        Initializes a Robot with the given speed in the specified room. The
-        robot initially has a random direction and a random position in the
-        room. The robot cleans the tile it is on.
-
-        room:  a RectangularRoom object.
-        speed: a float (speed > 0)
+        Initializes a Robot with the given speed in the specified room, with
+        random position and direction. Cleans the tile it is on.
         """
-        raise NotImplementedError
+        
+        self.room = room
+        self.speed = speed
+        self.position = self.room.getRandomPosition() # Random position
+        self.direction = random.randint(0,360)        # Random direction
+        self.room.cleanTileAtPosition(self.position)  # Clean the tile it is on
 
     def getRobotPosition(self):
         """
         Return the position of the robot.
-
-        returns: a Position object giving the robot's position.
         """
-        raise NotImplementedError
+        return self.position
     
     def getRobotDirection(self):
         """
@@ -177,7 +172,7 @@ class Robot(object):
         returns: an integer d giving the direction of the robot as an angle in
         degrees, 0 <= d < 360.
         """
-        raise NotImplementedError
+        return self.direction
 
     def setRobotPosition(self, position):
         """
@@ -185,7 +180,7 @@ class Robot(object):
 
         position: a Position object.
         """
-        raise NotImplementedError
+        self.position = position
 
     def setRobotDirection(self, direction):
         """
@@ -193,7 +188,7 @@ class Robot(object):
 
         direction: integer representing an angle in degrees
         """
-        raise NotImplementedError
+        self.direction = direction
 
     def updatePositionAndClean(self):
         """
@@ -202,7 +197,7 @@ class Robot(object):
         Move the robot to a new position and mark the tile it is on as having
         been cleaned.
         """
-        raise NotImplementedError # don't change this!
+        raise NotImplementedError
 
 
 # === Problem 3
@@ -359,4 +354,9 @@ def showPlot2(title, x_label, y_label):
 
 # print(c.getNumCleanedTiles())
 
-print(random.uniform(0, 75.5))
+room = RectangularRoom(4,2)
+r = Robot(room, 4)
+print(r.__dict__)
+print(r.position.x)
+
+print(r.room.tiles)
