@@ -249,8 +249,9 @@ def runSimulation(
 
         # Create Robots
         robots = [robot_type(room, speed) for _ in range(num_robots)]
-        while _room_coverage(room) < min_coverage:
+        while _room_coverage(room) < min_coverage:            
 
+            # Simulate one time step for each robot
             for r in robots:
                 r.updatePositionAndClean()
             count +=1
@@ -310,8 +311,14 @@ class RandomWalkRobot(Robot):
         Move the robot to a new position and mark the tile it is on as having
         been cleaned.
         """
-        raise NotImplementedError
+        new_position = self.position.getNewPosition(self.direction, self.speed)   
+        if self.room.isPositionInRoom(new_position):
+            self.room.cleanTileAtPosition(new_position)
+            self.setRobotPosition(new_position)           
+        else:
+            self.setRobotDirection(random.randint(0,360))
 
+        self.setRobotDirection(random.randint(0,360))
 
 def showPlot1(title, x_label, y_label):
     """
@@ -376,6 +383,13 @@ def showPlot2(title, x_label, y_label):
 
 
 # Uncomment this line to see how much your simulation takes on average
+#avg = runSimulation_with_Animation(1, 1.0, 10, 10, 0.8, 30, RandomWalkRobot)
 print(runSimulation(1, 1.0, 10, 10, 0.75, 30, StandardRobot))
+print(runSimulation(1, 1.0, 10, 10, 0.75, 30, RandomWalkRobot))
+
+print('-------')
 print(runSimulation(1, 1.0, 5, 5, 0.75, 30, StandardRobot))
+print(runSimulation(1, 1.0, 5, 5, 0.75, 30, RandomWalkRobot))
+print('-------')
 print(runSimulation(1, 1.0, 5, 5, 1, 30, StandardRobot))
+print(runSimulation(1, 1.0, 5, 5, 1, 30, RandomWalkRobot))
