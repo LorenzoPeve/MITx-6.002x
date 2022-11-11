@@ -223,8 +223,9 @@ class StandardRobot(Robot):
             self.setRobotDirection(random.randint(0,360))
 
 # === Problem 4
-def runSimulation(num_robots, speed, width, height, min_coverage, num_trials,
-                  robot_type):
+def runSimulation(
+        num_robots: int, speed: float, width: int, height: int, 
+        min_coverage: float, num_trials: int, robot_type: Robot):
     """
     Runs NUM_TRIALS trials of the simulation and returns the mean number of
     time-steps needed to clean the fraction MIN_COVERAGE of the room.
@@ -232,20 +233,39 @@ def runSimulation(num_robots, speed, width, height, min_coverage, num_trials,
     The simulation is run with NUM_ROBOTS robots of type ROBOT_TYPE, each with
     speed SPEED, in a room of dimensions WIDTH x HEIGHT.
 
-    num_robots: an int (num_robots > 0)
-    speed: a float (speed > 0)
-    width: an int (width > 0)
-    height: an int (height > 0)
-    min_coverage: a float (0 <= min_coverage <= 1.0)
-    num_trials: an int (num_trials > 0)
-    robot_type: class of robot to be instantiated (e.g. StandardRobot or
-                RandomWalkRobot)
     """
-    raise NotImplementedError
+
+    def _room_coverage(room: RectangularRoom):
+        try:
+            return room.getNumCleanedTiles() / room.getNumTiles()
+        except ZeroDivisionError:
+            return 0
+
+    steps = []
+    for _ in range(num_trials):
+
+        count = 0
+        # Create Room
+        room = RectangularRoom(width, height)    
+
+        # Create Robots
+        robots = [robot_type(room, speed) for _ in range(num_robots)]
+
+        while _room_coverage(room) < min_coverage:
+
+            for r in robots:
+                r.updatePositionAndClean()
+            count +=1
+
+        steps.append(count)
+
+    return sum(steps) / len(steps)
+
 
 # Uncomment this line to see how much your simulation takes on average
-##print(runSimulation(1, 1.0, 10, 10, 0.75, 30, StandardRobot))
-
+print(runSimulation(1, 1.0, 10, 10, 0.75, 30, StandardRobot))
+print(runSimulation(1, 1.0, 5, 5, 0.75, 30, StandardRobot))
+print(runSimulation(1, 1.0, 5, 5, 1, 30, StandardRobot))
 
 # === Problem 5
 class RandomWalkRobot(Robot):
@@ -325,10 +345,10 @@ def showPlot2(title, x_label, y_label):
 
 
 
-room = RectangularRoom(5,5)
-r = StandardRobot(room, 1)
+# room = RectangularRoom(5,5)
+# r = StandardRobot(room, 1)
 
-r.position =  Position(1.5, 2.5)
-r.direction = 90
-r.updatePositionAndClean()
-print(r.position)
+# r.position =  Position(1.5, 2.5)
+# r.direction = 90
+# r.updatePositionAndClean()
+# print(r.position)
