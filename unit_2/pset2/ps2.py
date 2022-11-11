@@ -46,7 +46,6 @@ class Position(object):
         return "(%0.2f, %0.2f)" % (self.x, self.y)
 
 
-# === Problem 1
 class RectangularRoom(object):
     """
     A RectangularRoom represents a rectangular region containing clean or dirty
@@ -65,7 +64,16 @@ class RectangularRoom(object):
 
         self.width = width
         self.height = height
-        
+
+         # At creation row is:
+            #  [[Row 0]
+            #   [Row 1]]
+            # But it should be 
+            #  [[Row 1]
+            #   [Row 0]] So that (0,0) is lower left corner and 
+            #                    (n-1, m-1) top right
+
+        self.range = list(range(0, self.height))[::-1]
         self.tiles = []   
 
         for _ in range(self.height):
@@ -80,20 +88,7 @@ class RectangularRoom(object):
         Marks the tile under the position POS as cleaned.
         Assumes that POS represents a valid position inside this room.
         """
-
-        # Note: Rows go from 0 to n-1 at the top so I need to flip the index.
-            # At creation row is:
-            #  [[Row 0]
-            #   [Row 1]]
-            # But it should be 
-            #  [[Row 1]
-            #   [Row 0]] So that (0,0) is lower left corner and 
-            #                    (n-1, m-1) top right
-        range_0 = list(range(0, self.height))
-        range_mod = range_0[::-1]
-
-
-        self.tiles[range_mod[math.floor(pos.y)]][math.floor(pos.x)] = True
+        self.tiles[self.range[math.floor(pos.y)]][math.floor(pos.x)] = True
         return
 
     def isTileCleaned(self, column, row) -> bool:
@@ -101,7 +96,7 @@ class RectangularRoom(object):
         Return True if the tile (row, column) has been cleaned.
         Assumes that (row, column) represents a valid tile inside the room.
         """
-        return self.tiles[row][column]
+        return self.tiles[self.range[row]][column]
     
     def getNumTiles(self):
         """
@@ -127,7 +122,8 @@ class RectangularRoom(object):
 
         returns: a Position object.
         """
-        raise NotImplementedError
+        return Position(random.uniform(0, self.width),
+                        random.uniform(0, self.height))
 
     def isPositionInRoom(self, pos):
         """
@@ -136,7 +132,12 @@ class RectangularRoom(object):
         pos: a Position object.
         returns: True if pos is in the room, False otherwise.
         """
-        raise NotImplementedError
+        if ((pos.x >= 0 and pos.x < self.width) and 
+            (pos.y >= 0 and pos.y < self.height)):
+            return True
+        return False
+
+
 
 
 # === Problem 2
@@ -329,16 +330,16 @@ def showPlot2(title, x_label, y_label):
 #
 
 
-print()
-room = RectangularRoom(4,2)
-for row in room.tiles:
-    print(row)
+# print()
+# room = RectangularRoom(4,2)
+# for row in room.tiles:
+#     print(row)
 
 
-room.cleanTileAtPosition(Position(0.6, 0.3))
-print(room.isTileCleaned(0, 0))
-print(room.tiles)
-print('---------------------------')
+# room.cleanTileAtPosition(Position(0.6, 0.3))
+# print(room.isTileCleaned(0, 0))
+# print(room.tiles)
+# print('---------------------------')
 
 # p = Position(0, 1)
 # c.cleanTileAtPosition(p)
@@ -357,3 +358,5 @@ print('---------------------------')
 
 
 # print(c.getNumCleanedTiles())
+
+print(random.uniform(0, 75.5))
