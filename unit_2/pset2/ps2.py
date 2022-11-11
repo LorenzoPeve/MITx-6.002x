@@ -200,7 +200,6 @@ class Robot(object):
         raise NotImplementedError
 
 
-# === Problem 3
 class StandardRobot(Robot):
     """
     A StandardRobot is a Robot with the standard movement strategy.
@@ -216,12 +215,12 @@ class StandardRobot(Robot):
         Move the robot to a new position and mark the tile it is on as having
         been cleaned.
         """
-        raise NotImplementedError
-
-
-# Uncomment this line to see your implementation of StandardRobot in action!
-##testRobotMovement(StandardRobot, RectangularRoom)
-
+        new_position = self.position.getNewPosition(self.direction, self.speed)   
+        if self.room.isPositionInRoom(new_position):
+            self.room.cleanTileAtPosition(new_position)
+            self.setRobotPosition(new_position)           
+        else:
+            self.setRobotDirection(random.randint(0,360))
 
 # === Problem 4
 def runSimulation(num_robots, speed, width, height, min_coverage, num_trials,
@@ -322,41 +321,14 @@ def showPlot2(title, x_label, y_label):
 #     plot.
 #
 #       (... your call here ...)
-#
 
 
-# print()
-# room = RectangularRoom(4,2)
-# for row in room.tiles:
-#     print(row)
 
 
-# room.cleanTileAtPosition(Position(0.6, 0.3))
-# print(room.isTileCleaned(0, 0))
-# print(room.tiles)
-# print('---------------------------')
+room = RectangularRoom(5,5)
+r = StandardRobot(room, 1)
 
-# p = Position(0, 1)
-# c.cleanTileAtPosition(p)
-
-# print(c.tiles)
-# print('---------------------------')
-
-# p = Position(3.6, 0)
-# c.cleanTileAtPosition(p)
-
-# print(c.tiles)
-
-
-# print(c.isTileCleaned(1, 1))
-# print(c.isTileCleaned(0, 1))
-
-
-# print(c.getNumCleanedTiles())
-
-room = RectangularRoom(4,2)
-r = Robot(room, 4)
-print(r.__dict__)
-print(r.position.x)
-
-print(r.room.tiles)
+r.position =  Position(1.5, 2.5)
+r.direction = 90
+r.updatePositionAndClean()
+print(r.position)
