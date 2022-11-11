@@ -222,7 +222,7 @@ class StandardRobot(Robot):
         else:
             self.setRobotDirection(random.randint(0,360))
 
-# === Problem 4
+
 def runSimulation(
         num_robots: int, speed: float, width: int, height: int, 
         min_coverage: float, num_trials: int, robot_type: Robot):
@@ -243,29 +243,59 @@ def runSimulation(
 
     steps = []
     for _ in range(num_trials):
-
         count = 0
         # Create Room
         room = RectangularRoom(width, height)    
 
         # Create Robots
         robots = [robot_type(room, speed) for _ in range(num_robots)]
-
         while _room_coverage(room) < min_coverage:
 
             for r in robots:
                 r.updatePositionAndClean()
             count +=1
-
         steps.append(count)
 
     return sum(steps) / len(steps)
 
 
-# Uncomment this line to see how much your simulation takes on average
-print(runSimulation(1, 1.0, 10, 10, 0.75, 30, StandardRobot))
-print(runSimulation(1, 1.0, 5, 5, 0.75, 30, StandardRobot))
-print(runSimulation(1, 1.0, 5, 5, 1, 30, StandardRobot))
+def runSimulation_with_Animation(
+        num_robots: int, speed: float, width: int, height: int, 
+        min_coverage: float, num_trials: int, robot_type: Robot):
+    """
+    Runs NUM_TRIALS trials of the simulation and returns the mean number of
+    time-steps needed to clean the fraction MIN_COVERAGE of the room.
+
+    The simulation is run with NUM_ROBOTS robots of type ROBOT_TYPE, each with
+    speed SPEED, in a room of dimensions WIDTH x HEIGHT.
+    """
+
+    def _room_coverage(room: RectangularRoom):
+        try:
+            return room.getNumCleanedTiles() / room.getNumTiles()
+        except ZeroDivisionError:
+            return 0
+
+    steps = []
+    for _ in range(num_trials):
+        anim = ps2_visualize.RobotVisualization(num_robots, width, height)
+        count = 0
+        # Create Room
+        room = RectangularRoom(width, height)    
+
+        # Create Robots
+        robots = [robot_type(room, speed) for _ in range(num_robots)]
+        anim.update(room, robots)
+        while _room_coverage(room) < min_coverage:
+
+            for r in robots:
+                r.updatePositionAndClean()
+            anim.update(room, robots)
+            count +=1
+        anim.done()
+        steps.append(count)
+
+    return sum(steps) / len(steps)
 
 # === Problem 5
 class RandomWalkRobot(Robot):
@@ -345,10 +375,7 @@ def showPlot2(title, x_label, y_label):
 
 
 
-# room = RectangularRoom(5,5)
-# r = StandardRobot(room, 1)
-
-# r.position =  Position(1.5, 2.5)
-# r.direction = 90
-# r.updatePositionAndClean()
-# print(r.position)
+# Uncomment this line to see how much your simulation takes on average
+print(runSimulation(1, 1.0, 10, 10, 0.75, 30, StandardRobot))
+print(runSimulation(1, 1.0, 5, 5, 0.75, 30, StandardRobot))
+print(runSimulation(1, 1.0, 5, 5, 1, 30, StandardRobot))
