@@ -298,7 +298,6 @@ def runSimulation_with_Animation(
 
     return sum(steps) / len(steps)
 
-# === Problem 5
 class RandomWalkRobot(Robot):
     """
     A RandomWalkRobot is a robot with the "random walk" movement strategy: it
@@ -362,34 +361,26 @@ def showPlot2(title, x_label, y_label):
     pylab.show()
     
 
-# === Problem 6
-# NOTE: If you are running the simulation, you will have to close it 
-# before the plot will show up.
+# showPlot1(title = 'Time It Takes 1 - 10 Robots To Clean 80% Of A Room',
+#           x_label = 'Number of Robots',
+#           y_label = 'Time-steps')
 
-#
-# 1) Write a function call to showPlot1 that generates an appropriately-labeled
-#     plot.
-#
-#       (... your call here ...)
-#
 
-#
-# 2) Write a function call to showPlot2 that generates an appropriately-labeled
-#     plot.
-#
-#       (... your call here ...)
+showPlot2(title = 'Time It Takes Two Robots To Clean 80% Of Variously Shaped Rooms',
+          x_label = 'Aspect Ratio',
+          y_label = 'Time-steps')
 
 
 
 
 # Uncomment this line to see how much your simulation takes on average
 #avg = runSimulation_with_Animation(1, 1.0, 10, 10, 0.8, 30, RandomWalkRobot)
-print(runSimulation(1, 1.0, 10, 10, 0.75, 30, StandardRobot))
-print(runSimulation(1, 1.0, 10, 10, 0.75, 30, RandomWalkRobot))
+# print(runSimulation(1, 1.0, 10, 10, 0.75, 30, StandardRobot))
+# print(runSimulation(1, 1.0, 10, 10, 0.75, 30, RandomWalkRobot))
 
-print('-------')
-print(runSimulation(1, 1.0, 5, 5, 0.75, 30, StandardRobot))
-print(runSimulation(1, 1.0, 5, 5, 0.75, 30, RandomWalkRobot))
-print('-------')
-print(runSimulation(1, 1.0, 5, 5, 1, 30, StandardRobot))
-print(runSimulation(1, 1.0, 5, 5, 1, 30, RandomWalkRobot))
+# print('-------')
+# print(runSimulation(1, 1.0, 5, 5, 0.75, 30, StandardRobot))
+# print(runSimulation(1, 1.0, 5, 5, 0.75, 30, RandomWalkRobot))
+# print('-------')
+# print(runSimulation(1, 1.0, 5, 5, 1, 30, StandardRobot))
+# print(runSimulation(1, 1.0, 5, 5, 1, 30, RandomWalkRobot))
