@@ -1,4 +1,5 @@
 import random
+import math
 
 class Location(object):
     def __init__(self, x, y):
@@ -67,4 +68,24 @@ class UsualDrunk(Drunk):
 class ColdDrunk(Drunk):
     def takeStep(self):
         stepChoices = [(0.0,0.9),(0.0,-1.1),(1.0,0.0),(-1.0,0.0)]
+        return random.choice(stepChoices)
+
+class EDrunk(Drunk):
+    def takeStep(self):
+        ang = 2 * math.pi * random.random()
+        length = 0.5 + 0.5 * random.random()
+        return (length * math.sin(ang), length * math.cos(ang))
+
+class PhotoDrunk(Drunk):
+    def takeStep(self):
+        stepChoices =\
+                    [(0.0, 0.5),(0.0, -0.5),
+                     (1.5, 0.0),(-1.5, 0.0)]
+        return random.choice(stepChoices)
+
+class DDrunk(Drunk):
+    def takeStep(self):
+        stepChoices =\
+                    [(0.85, 0.85), (-0.85, -0.85),
+                     (-0.56, 0.56), (0.56, -0.56)] 
         return random.choice(stepChoices)
