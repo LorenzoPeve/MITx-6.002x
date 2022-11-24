@@ -58,6 +58,7 @@ def getMeansAndSDs(population, sample, verbose = False):
         print('Sample mean =', sampleMean)
         print('Standard deviation of sample =',
               numpy.std(sample))
+        pylab.show()
     return popMean, sampleMean,\
            numpy.std(population), numpy.std(sample)
 
