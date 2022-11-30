@@ -1,6 +1,8 @@
+from __future__ import annotations
 # Problem Set 3: Simulating the Spread of Disease and Virus Population Dynamics 
 
 import random
+import numpy as np
 import pylab
 random.seed(0)
 
@@ -43,14 +45,13 @@ class SimpleVirus(object):
         Stochastically determines whether this virus particle is cleared from
         the patient's body at a time step.
         """
+        p = self.getClearProb()
+        return np.random.choice(
+            [True, False], size = 1, replace=False, p=[p, 1-p])[0]
 
-        return random.choices(
-            population = [True, False],
-            weights = [self.getClearProb, 1-self.getClearProb],
-            k=1)[0]
 
     
-    def reproduce(self, popDensity):
+    def reproduce(self, popDensity: float) -> SimpleVirus:
         """
         Stochastically determines whether this virus particle reproduces at a
         time step. Called by the update() method in the Patient and
@@ -61,18 +62,24 @@ class SimpleVirus(object):
         the instance of the offspring SimpleVirus (which has the same
         maxBirthProb and clearProb values as its parent).         
 
-        popDensity: the population density (a float), defined as the current
-        virus population divided by the maximum population.         
+        Args:
+            popDensity (float): the population density defined as the current
+                virus population divided by the maximum population.         
         
-        returns: a new instance of the SimpleVirus class representing the
-        offspring of this virus particle. The child should have the same
-        maxBirthProb and clearProb values as this virus. Raises a
-        NoChildException if this virus particle does not reproduce.               
+        Returns: 
+            A new instance of the SimpleVirus class representing the offspring
+            of this virus particle. The child should have the same maxBirthProb
+            and clearProb values as this virus. 
+        
+        Raises a NoChildException if this virus particle does not reproduce.               
         """
-
-        # TODO
-
-
+        p = self.maxBirthProb * (1 - popDensity)
+        reproduce =  np.random.choice(
+            [True, False], size = 1, replace=False, p=[p, 1-p])[0]
+            
+        if reproduce:
+            return SimpleVirus(self.maxBirthProb, self.clearProb)
+        raise NoChildException
 
 class Patient(object):
     """
@@ -80,31 +87,16 @@ class Patient(object):
     and his/her virus populations have no drug resistance.
     """    
 
-    def __init__(self, viruses, maxPop):
-        """
-        Initialization function, saves the viruses and maxPop parameters as
-        attributes.
-
-        viruses: the list representing the virus population (a list of
-        SimpleVirus instances)
-
-        maxPop: the maximum virus population for this patient (an integer)
-        """
-
-        # TODO
+    def __init__(self, viruses: list[SimpleVirus], maxPop: int):
+        self.viruses = viruses
+        self.maxPop = maxPop
 
     def getViruses(self):
-        """
-        Returns the viruses in this Patient.
-        """
-        # TODO
+        return self.viruses
 
 
     def getMaxPop(self):
-        """
-        Returns the max population.
-        """
-        # TODO
+        return self.maxPop
 
 
     def getTotalPop(self):
@@ -113,29 +105,29 @@ class Patient(object):
         returns: The total virus population (an integer)
         """
 
-        # TODO        
+        pass      
 
 
-    def update(self):
+    def update(self) -> int:
         """
         Update the state of the virus population in this patient for a single
         time step. update() should execute the following steps in this order:
         
-        - Determine whether each virus particle survives and updates the list
-        of virus particles accordingly.   
+        1 - Determine whether each virus particle survives and updates the list
+            of virus particles accordingly.   
         
-        - The current population density is calculated. This population density
-          value is used until the next call to update() 
+        2 - The current population density is calculated. This population
+            density value is used until the next call to update() 
         
-        - Based on this value of population density, determine whether each 
-          virus particle should reproduce and add offspring virus particles to 
-          the list of viruses in this patient.                    
+        3 - Based on this value of population density, determine whether each 
+            virus particle should reproduce and add offspring virus particles to 
+            the list of viruses in this patient.                    
 
-        returns: The total virus population at the end of the update (an
-        integer)
+        Returns: 
+            The total virus population at the end of the update.
         """
 
-        # TODO
+        pass
 
 
 
