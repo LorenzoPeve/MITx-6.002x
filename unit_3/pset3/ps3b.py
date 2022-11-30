@@ -5,6 +5,9 @@ import random
 import numpy as np
 import pylab
 random.seed(0)
+from random import choices as CH
+
+from util import choices
 
 class NoChildException(Exception):
     """
@@ -32,6 +35,9 @@ class SimpleVirus(object):
         self.maxBirthProb = maxBirthProb
         self.clearProb = clearProb
 
+    def __repr__(self):
+        return str(id(self))
+
     def getMaxBirthProb(self):
         return self.maxBirthProb
 
@@ -44,8 +50,7 @@ class SimpleVirus(object):
         the patient's body at a time step.
         """
         p = self.getClearProb()
-        return np.random.choice(
-            [True, False], size = 1, replace=False, p=[p, 1-p])[0]
+        return choices([True, False], weights=[p, 1-p], k=1)[0]
     
     def reproduce(self, popDensity: float) -> SimpleVirus:
         """
@@ -70,8 +75,9 @@ class SimpleVirus(object):
         Raises a NoChildException if this virus particle does not reproduce.               
         """
         p = self.maxBirthProb * (1 - popDensity)
-        reproduce =  np.random.choice(
-            [True, False], size = 1, replace=False, p=[p, 1-p])[0]
+        if p < 0:
+            print()
+        reproduce = choices([True, False], weights=[p, 1-p], k=1)[0]
             
         if reproduce:
             return SimpleVirus(self.maxBirthProb, self.clearProb)
@@ -98,7 +104,6 @@ class Patient(object):
         """Returns the size of the current total virus population."""
         return len(self.getViruses())
 
-
     def update(self) -> int:
         """
         Update the state of the virus population in this patient for a single
@@ -117,18 +122,29 @@ class Patient(object):
         Returns: 
             The total virus population at the end of the update.
         """
-        virures_t0 = self.getViruses()
-        virures_t1 = virures_t0.copy()
 
-        for v in virures_t1:
+        # Remove viruses that dont survive
+        for v in self.getViruses().copy():
             if v.doesClear():
-                virures_t0.remove(v)
+                self.getViruses().remove(v)
+
+        popDensity = self.getTotalPop() / self.getMaxPop()
+
+        # Try reproducing each virus
+        for v in self.getViruses().copy():
+            try:
+                new_virus = v.reproduce(popDensity)
+            except NoChildException:
+                continue
+
+            if self.getTotalPop() + 1 <= self.getMaxPop():
+                self.getViruses().append(new_virus)
+            else:
+                break
+
+        return self.getTotalPop()
 
 
-
-#
-# PROBLEM 2
-#
 def simulationWithoutDrug(numViruses, maxPop, maxBirthProb, clearProb,
                           numTrials):
     """
