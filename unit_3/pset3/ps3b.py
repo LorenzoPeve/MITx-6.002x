@@ -13,8 +13,6 @@ class NoChildException(Exception):
     reproduce.
     """
 
-
-
 class SimpleVirus(object):
 
     """
@@ -48,8 +46,6 @@ class SimpleVirus(object):
         p = self.getClearProb()
         return np.random.choice(
             [True, False], size = 1, replace=False, p=[p, 1-p])[0]
-
-
     
     def reproduce(self, popDensity: float) -> SimpleVirus:
         """
@@ -79,7 +75,8 @@ class SimpleVirus(object):
             
         if reproduce:
             return SimpleVirus(self.maxBirthProb, self.clearProb)
-        raise NoChildException
+        else:
+            raise NoChildException
 
 class Patient(object):
     """
@@ -94,18 +91,12 @@ class Patient(object):
     def getViruses(self):
         return self.viruses
 
-
     def getMaxPop(self):
         return self.maxPop
 
-
-    def getTotalPop(self):
-        """
-        Gets the size of the current total virus population. 
-        returns: The total virus population (an integer)
-        """
-
-        pass      
+    def getTotalPop(self) -> int:
+        """Returns the size of the current total virus population."""
+        return len(self.getViruses())
 
 
     def update(self) -> int:
@@ -126,8 +117,12 @@ class Patient(object):
         Returns: 
             The total virus population at the end of the update.
         """
+        virures_t0 = self.getViruses()
+        virures_t1 = virures_t0.copy()
 
-        pass
+        for v in virures_t1:
+            if v.doesClear():
+                virures_t0.remove(v)
 
 
 
