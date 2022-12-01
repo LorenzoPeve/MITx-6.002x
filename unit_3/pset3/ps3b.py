@@ -233,10 +233,10 @@ class ResistantVirus(SimpleVirus):
         Stochastically determines whether this virus particle reproduces at a
         time step. Called by the update() method in the TreatedPatient class.
 
-        A virus particle will only reproduce if it is resistant to ALL the drugs
-        in the activeDrugs list. 
+        A virus particle will only reproduce if it is resistant to ALL the
+        drugs in the activeDrugs list.
 
-        The virus reproduces with probability: maxBirthProb * (1-popDensity).                       
+        The virus reproduces with probability: maxBirthProb * (1-popDensity).
 
         If this virus particle reproduces, then reproduce() creates and returns
         the instance of the offspring ResistantVirus (which has the same
@@ -248,19 +248,12 @@ class ResistantVirus(SimpleVirus):
         inheriting that resistance trait from the parent, and probability
         mutProb of switching that resistance trait in the offspring.       
 
-        For example, if a virus particle is resistant to guttagonol but not
-        srinol, and self.mutProb is 0.1, then there is a 10% chance that
-        that the offspring will lose resistance to guttagonol and a 90%
-        chance that the offspring will be resistant to guttagonol.
-        There is also a 10% chance that the offspring will gain resistance to
-        srinol and a 90% chance that the offspring will not be resistant to
-        srinol.
+        Args
+            popDensity (float): the population density, defined as the current
+                virus population divided by the maximum population       
 
-        popDensity: the population density (a float), defined as the current
-        virus population divided by the maximum population       
-
-        activeDrugs: a list of the drug names acting on this virus particle
-        (a list of strings).
+            activeDrugs (list[str]): a list of the drug names acting on this
+                virus particle.
 
         Returns:
             A new instance of the ResistantVirus class representing the 
@@ -318,18 +311,19 @@ class TreatedPatient(Patient):
         maxPop: The  maximum virus population for this patient (an integer)
         """
 
-        # TODO
+        self.viruses = viruses
+        self.maxPop = maxPop
 
-
-    def addPrescription(self, newDrug):
+    def addPrescription(self, newDrug: list):
         """
         Administer a drug to this patient. After a prescription is added, the
         drug acts on the virus population for all subsequent time steps. If the
         newDrug is already prescribed to this patient, the method has no effect.
 
-        newDrug: The name of the drug to administer to the patient (a string).
-
-        postcondition: The list of drugs being administered to a patient is updated
+        Args:
+            newDrug (str): The name of the drug to administer to the patient.
+            postcondition: The list of drugs being administered to a patient is 
+                updated
         """
 
         # TODO
