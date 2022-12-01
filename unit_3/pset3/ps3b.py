@@ -228,7 +228,7 @@ class ResistantVirus(SimpleVirus):
             return resistant
         return False
 
-    def reproduce(self, popDensity, activeDrugs: list):
+    def reproduce(self, popDensity, activeDrugs: list) -> ResistantVirus:
         """
         Stochastically determines whether this virus particle reproduces at a
         time step. Called by the update() method in the TreatedPatient class.
@@ -263,7 +263,7 @@ class ResistantVirus(SimpleVirus):
         Raises a NoChildException if this virus particle does not reproduce.
         """
 
-        def _mutation(p_mute: float, resistances):
+        def _mutation(p_mute: float, resistances: dict):
 
             inherited_resistances = {}
 
@@ -299,22 +299,13 @@ class TreatedPatient(Patient):
     virus population can acquire resistance to the drugs he/she takes.
     """
 
-    def __init__(self, viruses, maxPop):
-        """
-        Initialization function, saves the viruses and maxPop parameters as
-        attributes. Also initializes the list of drugs being administered
-        (which should initially include no drugs).              
-
-        viruses: The list representing the virus population (a list of
-        virus instances)
-
-        maxPop: The  maximum virus population for this patient (an integer)
-        """
+    def __init__(self, viruses: list[SimpleVirus], maxPop: int) -> None:
 
         self.viruses = viruses
         self.maxPop = maxPop
+        self.drugs = []
 
-    def addPrescription(self, newDrug: list):
+    def addPrescription(self, newDrug: list) -> None:
         """
         Administer a drug to this patient. After a prescription is added, the
         drug acts on the virus population for all subsequent time steps. If the
@@ -322,38 +313,36 @@ class TreatedPatient(Patient):
 
         Args:
             newDrug (str): The name of the drug to administer to the patient.
-            postcondition: The list of drugs being administered to a patient is 
-                updated
         """
 
-        # TODO
+        if newDrug not in self.drugs:
+            self.drugs.append(newDrug)
 
+    def getPrescriptions(self) -> list:
+        return self.drugs
 
-    def getPrescriptions(self):
-        """
-        Returns the drugs that are being administered to this patient.
-
-        returns: The list of drug names (strings) being administered to this
-        patient.
-        """
-
-        # TODO
-
-
-    def getResistPop(self, drugResist):
+    def getResistPop(self, drugResist: list[str]) -> int:
         """
         Get the population of virus particles resistant to the drugs listed in
         drugResist.       
 
-        drugResist: Which drug resistances to include in the population (a list
-        of strings - e.g. ['guttagonol'] or ['guttagonol', 'srinol'])
+        Args:
+            drugResist: Which drug resistances to include in the population.
+            e.g. ['guttagonol'] or ['guttagonol', 'srinol'].
 
-        returns: The population of viruses (an integer) with resistances to all
-        drugs in the drugResist list.
+        Returns: 
+            The population of viruses with resistances to all drugs in the 
+            drugResist list.
         """
 
-        # TODO
-
+        c = 0
+        for v in self.viruses:
+            for d in drugResist:
+                if not v.isResistantTo(d):
+                    break
+            else:
+                c += 1
+        return c
 
     def update(self):
         """
@@ -372,17 +361,32 @@ class TreatedPatient(Patient):
           The list of drugs being administered should be accounted for in the
           determination of whether each virus particle reproduces.
 
-        returns: The total virus population at the end of the update (an
-        integer)
+        Returns: 
+            The total virus population at the end of the update.
         """
 
-        # TODO
+        # Remove viruses that dont survive
+        for v in self.getViruses().copy():
+            if v.doesClear():
+                self.getViruses().remove(v)
+
+        popDensity = self.getTotalPop() / self.getMaxPop()
+
+        # Try reproducing each virus
+        for v in self.getViruses().copy():
+            try:
+                new_virus = v.reproduce(popDensity, self.drugs)
+            except NoChildException:
+                continue
+
+            if self.getTotalPop() + 1 <= self.getMaxPop():
+                self.getViruses().append(new_virus)
+            else:
+                break
+
+        return self.getTotalPop()
 
 
-
-#
-# PROBLEM 4
-#
 def simulationWithDrug(numViruses, maxPop, maxBirthProb, clearProb, resistances,
                        mutProb, numTrials):
     """
