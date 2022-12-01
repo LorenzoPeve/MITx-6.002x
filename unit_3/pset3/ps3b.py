@@ -35,9 +35,6 @@ class SimpleVirus(object):
         self.maxBirthProb = maxBirthProb
         self.clearProb = clearProb
 
-    def __repr__(self):
-        return str(id(self))
-
     def getMaxBirthProb(self):
         return self.maxBirthProb
 
@@ -75,8 +72,6 @@ class SimpleVirus(object):
         Raises a NoChildException if this virus particle does not reproduce.               
         """
         p = self.maxBirthProb * (1 - popDensity)
-        if p < 0:
-            print()
         reproduce = choices([True, False], weights=[p, 1-p], k=1)[0]
             
         if reproduce:
@@ -190,68 +185,58 @@ class ResistantVirus(SimpleVirus):
     Representation of a virus which can have drug resistance.
     """   
 
-    def __init__(self, maxBirthProb, clearProb, resistances, mutProb):
+    def __init__(
+        self, maxBirthProb: float, clearProb: float, 
+        resistances: dict, mutProb:float):
+
         """
-        Initialize a ResistantVirus instance, saves all parameters as attributes
-        of the instance.
-
-        maxBirthProb: Maximum reproduction probability (a float between 0-1)       
-
-        clearProb: Maximum clearance probability (a float between 0-1).
-
-        resistances: A dictionary of drug names (strings) mapping to the state
-        of this virus particle's resistance (either True or False) to each drug.
-        e.g. {'guttagonol':False, 'srinol':False}, means that this virus
-        particle is resistant to neither guttagonol nor srinol.
-
-        mutProb: Mutation probability for this virus particle (a float). This is
-        the probability of the offspring acquiring or losing resistance to a drug.
+        Args:
+            maxBirthProb (float): Maximum reproduction probability between 0-1.
+            clearProb (float): Maximum clearance probability between 0-1.
+            resistances (dict): A dictionary of drug names (strings) mapping to
+                the state of this virus particle's resistance (either True or 
+                False) to each drug. eg. {'guttagonol':False, 'srinol':False},
+                means that this virus particle is resistant to neither
+                guttagonol nor srinol.
+            
+            mutProb (float): Mutation probability for this virus particle. This
+                is the probability of the offspring acquiring or losing
+                resistance to a drug.
         """
 
-        # TODO
-
+        super().__init__(maxBirthProb, clearProb)
+        self.resistances = resistances
+        self.mutProb = mutProb
 
     def getResistances(self):
-        """
-        Returns the resistances for this virus.
-        """
-        # TODO
+        return self.resistances
 
     def getMutProb(self):
-        """
-        Returns the mutation probability for this virus.
-        """
-        # TODO
+        return self.mutProb
 
-    def isResistantTo(self, drug):
+    def isResistantTo(self, drug: str) -> bool:
         """
-        Get the state of this virus particle's resistance to a drug. This method
-        is called by getResistPop() in TreatedPatient to determine how many virus
-        particles have resistance to a drug.       
+        Get the state of this virus particle's resistance to a drug. This 
+        method is called by getResistPop() in TreatedPatient to determine how
+        many virus particles have resistance to a drug.       
 
-        drug: The drug (a string)
-
-        returns: True if this virus instance is resistant to the drug, False
+        Returns True if this virus instance is resistant to the drug, False
         otherwise.
         """
-        
-        # TODO
+        resistant = self.resistances.get(drug)
+        if resistant:
+            return resistant
+        return False
 
-
-    def reproduce(self, popDensity, activeDrugs):
+    def reproduce(self, popDensity, activeDrugs: list):
         """
         Stochastically determines whether this virus particle reproduces at a
         time step. Called by the update() method in the TreatedPatient class.
 
         A virus particle will only reproduce if it is resistant to ALL the drugs
-        in the activeDrugs list. For example, if there are 2 drugs in the
-        activeDrugs list, and the virus particle is resistant to 1 or no drugs,
-        then it will NOT reproduce.
+        in the activeDrugs list. 
 
-        Hence, if the virus is resistant to all drugs
-        in activeDrugs, then the virus reproduces with probability:      
-
-        self.maxBirthProb * (1 - popDensity).                       
+        The virus reproduces with probability: maxBirthProb * (1-popDensity).                       
 
         If this virus particle reproduces, then reproduce() creates and returns
         the instance of the offspring ResistantVirus (which has the same
@@ -277,15 +262,43 @@ class ResistantVirus(SimpleVirus):
         activeDrugs: a list of the drug names acting on this virus particle
         (a list of strings).
 
-        returns: a new instance of the ResistantVirus class representing the
-        offspring of this virus particle. The child should have the same
-        maxBirthProb and clearProb values as this virus. Raises a
-        NoChildException if this virus particle does not reproduce.
+        Returns:
+            A new instance of the ResistantVirus class representing the 
+            offspring of this virus particle. The child should have the same
+            maxBirthProb and clearProb values as this virus.
+        
+        Raises a NoChildException if this virus particle does not reproduce.
         """
 
-        # TODO
+        def _mutation(p_mute: float, resistances):
 
+            inherited_resistances = {}
+
+            for k, v in resistances.items():
+
+                inherit = choices([True, False], weights=[1-p_mute, p_mute])[0]
+                if inherit:
+                    inherited_resistances[k] = v
+                else:
+                    inherited_resistances[k] = not v
             
+            return inherited_resistances
+
+        for drug in activeDrugs:
+            if not self.isResistantTo(drug):
+                raise NoChildException
+        
+        p = self.maxBirthProb * (1 - popDensity)
+        reproduce = choices([True, False], weights=[p, 1-p], k=1)[0]
+            
+        if reproduce:
+            inherited_resistances = _mutation(self.mutProb, self.resistances)
+
+            return ResistantVirus(
+                self.maxBirthProb, self.clearProb, inherited_resistances,
+                self.mutProb)
+        else:
+            raise NoChildException
 
 class TreatedPatient(Patient):
     """
