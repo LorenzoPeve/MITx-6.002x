@@ -394,7 +394,9 @@ def simulationWithDrug(numViruses, maxPop, maxBirthProb, clearProb, resistances,
 
     For each of numTrials trials, instantiates a patient, runs a simulation for
     150 timesteps, adds guttagonol, and runs the simulation for an additional
-    150 timesteps.  At the end plots the average virus population size
+    150 timesteps.
+    
+    At the end plots the average virus population size
     (for both the total virus population and the guttagonol-resistant virus
     population) as a function of time.
 
@@ -409,5 +411,37 @@ def simulationWithDrug(numViruses, maxPop, maxBirthProb, clearProb, resistances,
     numTrials: number of simulation runs to execute (an integer)
     
     """
+    T = 150
+    pop_at_time_step = [0 for _ in range(T*2)]
+    pop_gutt_time_step = [0 for _ in range(T*2)]
+    for i in range(numTrials):
 
-    # TODO
+        # 1. instantiates a patient
+        v = [ResistantVirus(maxBirthProb, clearProb, resistances, mutProb) 
+            for _ in range(numViruses)]
+
+        p = TreatedPatient(v, maxPop)
+
+        # 2. First 150 timesteps
+        for t in range(T):
+            pop_at_time_step[t] += p.update()
+            pop_gutt_time_step[t] += p.getResistPop(['guttagonol'])
+
+        # 3. Adds guttagonol
+        p.addPrescription('guttagonol')
+
+        # 4. Second 150 timesteps
+        for t in range(T,T*2):
+            pop_at_time_step[t] += p.update()
+            pop_gutt_time_step[t] += p.getResistPop(['guttagonol'])
+
+    average_pop = [i/numTrials for i in pop_at_time_step]
+    average_gutt_pop = [i/numTrials for i in pop_gutt_time_step]
+    
+    pylab.plot(average_pop, label = "TotalPop")
+    pylab.plot(average_gutt_pop, label = "Guttagonol-resistant Virus")
+    pylab.title("SimpleVirus simulation")
+    pylab.xlabel("Time Steps")
+    pylab.ylabel("Average Virus Population")
+    pylab.legend(loc = "best")
+    pylab.show()
